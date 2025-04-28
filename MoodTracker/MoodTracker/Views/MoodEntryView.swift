@@ -17,36 +17,20 @@ struct MoodEntryView: View {
     )
     @State private var note = ""
     @State private var selectedDate = Date()
+    @State private var selectedMood: String?
     private var moodEntry = MoodEntry(context:  CoreDataManager.shared.viewContext)
     
     var body: some View {
         NavigationView {
             VStack(alignment:.center, spacing: 30) {
-                
+
                 Text("Select your mood")
                     .font(.largeTitle)
                     .fontWeight(.bold)
-                HStack(alignment: .center, spacing: 20, content: {
-                    Button {
-                        moodEntry.moodEmoji = "😄"
-                    } label: {
-                        Text("😄")
-                            .font(.system(size: 100, weight: .bold, design: .default))
-                    }
-                    Button {
-                        moodEntry.moodEmoji = "😐"
-                    } label: {
-                        Text("😐")
-                            .font(.system(size: 100, weight: .bold, design: .default))
-                    }
-                    Button {
-                        moodEntry.moodEmoji = "😢"
-                    } label: {
-                        Text("😢")
-                            .font(.system(size: 100, weight: .bold, design: .default))
-                    }
-                    
-                })
+                List(MoodData.moods, id: \.emoji, selection: $selectedMood) { mood in
+                    Text(mood.emoji+" "+mood.label)
+                }
+                .listStyle(.automatic).cornerRadius(10).padding(EdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20))
                 Form {
                     TextField(note, text: $note).frame(maxWidth: .infinity, maxHeight: 40).background().cornerRadius(10)
                         .padding()
@@ -58,9 +42,15 @@ struct MoodEntryView: View {
                 
                 Button(action: {
                     moodEntry.id = UUID()
+                    moodEntry.moodEmoji = selectedMood ?? ""
                     moodEntry.note = note
                     moodEntry.date = selectedDate
-                    viewModel.addMood(moodEntry)
+                    if (selectedMood != nil || selectedMood != "") {
+                        viewModel.addMood(moodEntry)
+                    } else {
+                        print("Please select a mood")
+                    }
+                    
                 }) {
                     Text("Save").frame(maxWidth: .infinity, maxHeight: 50).background().cornerRadius(20).padding()
                 }
