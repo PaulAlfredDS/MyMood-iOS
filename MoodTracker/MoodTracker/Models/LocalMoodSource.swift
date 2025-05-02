@@ -23,8 +23,11 @@ class LocalMoodSource: MoodDataSource {
     
     func getMoodEntries() -> [MoodEntry] {
         let fetchRequest: NSFetchRequest<MoodEntry> = MoodEntry.fetchRequest()
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "date", ascending: true)]
         do {
-            return try context.fetch(fetchRequest)
+            let entries = try context.fetch(fetchRequest)
+             print("Fetched mood entries: \(entries)")
+            return entries
         } catch {
             print("Failed to fetch mood entries: \(error)")
             return []
@@ -99,12 +102,13 @@ class LocalMoodSource: MoodDataSource {
 
         let fetchRequest: NSFetchRequest<MoodEntry> = MoodEntry.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "date >= %@ AND date < %@", startOfDay as NSDate, endOfDay as NSDate)
+        fetchRequest.includesPendingChanges = false
 
         do {
             let entries = try context.fetch(fetchRequest)
-            print("Mood entries for date \(date): \(entries[0].date!), \(entries[0].moodEmoji!), \(entries[0].note!)")
+            print("Mood entries for date \(date): \(entries)")
             print("Fetched mood entries between \(startOfDay) and \(endOfDay): \(entries.count)")
-            return !entries.isEmpty
+            return entries.count > 0
         } catch {
             print("Fetch error: \(error)")
             return false

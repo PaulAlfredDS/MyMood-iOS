@@ -13,8 +13,9 @@ struct MoodTrackerApp: App {
 
     var body: some Scene {
         WindowGroup {
-            MoodEntryView()
-                .environment(\.managedObjectContext, persistenceController.container.viewContext)
+//            MoodGraphView().environment(\.managedObjectContext, persistenceController.container.viewContext)
+            MoodEntryView().environment(\.managedObjectContext, persistenceController.container.viewContext)
+
         }
     }
 }

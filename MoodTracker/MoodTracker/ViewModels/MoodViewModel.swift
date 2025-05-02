@@ -23,17 +23,13 @@ extension MoodEntryView {
         }
 
         func addMood(_ mood: MoodEntry) -> Bool{
-            // Safely unwrap mood.date
-//            guard let moodDate = mood.date else {
-//                print("Mood date is nil. Cannot add mood entry.")
-//                return false
-//            }
-//    
-//            //Check if date is unique
-//            if localSource.doesMoodExist(mood.date!) {
-//                return true
-//            }
-
+            // Check if mood already exists
+            if localSource.doesMoodExist(mood.date!) {
+                print("Mood already exists for this date.")
+                return true
+            }
+                
+            
             localSource.addMood(mood)
             moods.append(mood)
 
