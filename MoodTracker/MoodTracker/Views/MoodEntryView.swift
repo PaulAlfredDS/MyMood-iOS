@@ -17,58 +17,97 @@ struct MoodEntryView: View {
     )
     @State private var note = ""
     @State private var selectedDate = Date()
+    @State private var selectedMood: String?
+    @State private var score = 0
+    @State private var showSuccess = false
     private var moodEntry = MoodEntry(context:  CoreDataManager.shared.viewContext)
     
     var body: some View {
         NavigationView {
             VStack(alignment:.center, spacing: 30) {
-                
-                Text("Select your mood")
+                Text("How are you today?")
                     .font(.largeTitle)
                     .fontWeight(.bold)
-                HStack(alignment: .center, spacing: 20, content: {
-                    Button {
-                        moodEntry.moodEmoji = "😄"
-                    } label: {
-                        Text("😄")
-                            .font(.system(size: 100, weight: .bold, design: .default))
+                List(MoodData.moods) { mood in
+                    HStack {
+                        Text(mood.emoji + " " + mood.label)
+                        Spacer()
+                        if selectedMood == mood.emoji {
+                            Image(systemName: "checkmark")
+                                .foregroundColor(.blue)
+                        }
                     }
-                    Button {
-                        moodEntry.moodEmoji = "😐"
-                    } label: {
-                        Text("😐")
-                            .font(.system(size: 100, weight: .bold, design: .default))
+                    .contentShape(Rectangle()) // Makes the entire row tappable
+                    .onTapGesture {
+                        score = mood.score
+                        selectedMood = mood.emoji
                     }
-                    Button {
-                        moodEntry.moodEmoji = "😢"
-                    } label: {
-                        Text("😢")
-                            .font(.system(size: 100, weight: .bold, design: .default))
-                    }
-                    
-                })
+                }
+                .listStyle(.automatic)
+                .cornerRadius(10)
+                .padding(EdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20))
+                
+                
                 Form {
+                    
+                    Text("Do you want to add a note?")
+                        .font(.subheadline)
+                        .fontWeight(.bold)
                     TextField(note, text: $note).frame(maxWidth: .infinity, maxHeight: 40).background().cornerRadius(10)
                         .padding()
                     
-                    
-                    DatePicker("Date", selection: $selectedDate, in: ...Date(), displayedComponents: .date).background().cornerRadius(10)
-                }.cornerRadius(20).padding(EdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20)) 
+                }.cornerRadius(20).padding(EdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20))
+                
+                DatePicker("Date", selection: $selectedDate, in: ...Date(), displayedComponents: .date).background().cornerRadius(10).padding(EdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20))
                 
                 
                 Button(action: {
                     moodEntry.id = UUID()
+                    moodEntry.moodEmoji = selectedMood ?? ""
                     moodEntry.note = note
                     moodEntry.date = selectedDate
-                    viewModel.addMood(moodEntry)
+                    moodEntry.score = Int16(score)
+                    if selectedMood != nil && selectedMood != "" {
+                        viewModel.addMood(moodEntry)
+                        showSuccess = true
+                        startOneTimeTimer()
+                    } else {
+                        print("Please select a mood")
+                    }
+                    
                 }) {
                     Text("Save").frame(maxWidth: .infinity, maxHeight: 50).background().cornerRadius(20).padding()
                 }
-            }.containerRelativeFrame([.horizontal, .vertical])
-                .background(Gradient(colors: [.yellow, .orange, .red]).opacity(0.6))
+                
+                if viewModel.hasMoodData(on: Calendar.current.component(.month, from: Date())) {
+                    
+                    NavigationLink(destination: MoodGraphView()) {
+                        Text("View Mood Graph").frame(maxWidth: .infinity, maxHeight: 50).background().cornerRadius(20).padding()
+                    }
+                }
+            }
+            .overlay(alignment:.top) {
+                if showSuccess {
+                    Text("Mood saved successfully!")
+                        .foregroundColor(.green)
+                        .padding()
+                        .background(Color.white)
+                        .cornerRadius(10)
+                        .transition(.slide)
+                }
+            }.animation(.easeInOut(duration: 0.3), value: showSuccess)
+                .containerRelativeFrame([.horizontal, .vertical])
+                .background(Gradient(colors: [.blue,.orange, .purple]).opacity(0.6))
+        }
+        
+        
+    }
+    
+    func startOneTimeTimer() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            showSuccess = false
         }
     }
-
 }
 
 
