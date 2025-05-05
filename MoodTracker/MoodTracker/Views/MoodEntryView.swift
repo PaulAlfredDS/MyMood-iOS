@@ -79,8 +79,11 @@ struct MoodEntryView: View {
                     Text("Save").frame(maxWidth: .infinity, maxHeight: 50).background().cornerRadius(20).padding()
                 }
                 
-                NavigationLink(destination: MoodGraphView()) {
-                    Text("View Mood Graph").frame(maxWidth: .infinity, maxHeight: 50).background().cornerRadius(20).padding()
+                if viewModel.hasMoodData(on: Calendar.current.component(.month, from: Date())) {
+                    
+                    NavigationLink(destination: MoodGraphView()) {
+                        Text("View Mood Graph").frame(maxWidth: .infinity, maxHeight: 50).background().cornerRadius(20).padding()
+                    }
                 }
             }
             .overlay(alignment:.top) {

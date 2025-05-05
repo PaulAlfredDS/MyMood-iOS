@@ -40,7 +40,9 @@ struct MoodGraphView: View {
             }.frame(height: 300)
              .padding()
         }.onAppear {
-            viewModel.fetchMoodEntries()
+            let currentMonth = Calendar.current.component(.month, from: Date())
+
+            viewModel.fetchMoodEntries(by: currentMonth)
             let moodScores : [Int] = viewModel.moodEntries.map { Int($0.score) }
             let averageMoodScore = viewModel.getAveMoodScorePercentage(from: moodScores)
             currentEmoji = viewModel.getCurrentEmoji()

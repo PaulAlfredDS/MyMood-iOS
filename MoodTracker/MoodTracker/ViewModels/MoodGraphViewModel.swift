@@ -22,9 +22,13 @@ extension MoodGraphView {
             moodEntries = localDataSource.getMoodEntries()
         }
         
+        func fetchMoodEntries(by month: Int) {
+            moodEntries = localDataSource.getMoodsbyMonth(month)
+        }
+        
         func getDaysOfMonth(of date: Date) -> [String] {
             var days: [String] = []
-            for day in 1...getMaxDay(of: date)! {
+            for _ in 1...getMaxDay(of: date)! {
                 let dateFormatter = DateFormatter()
                 dateFormatter.dateFormat = "MMMdd"
                 let dateString = dateFormatter.string(from: date)
@@ -47,6 +51,10 @@ extension MoodGraphView {
         }
         
         func getCurrentEmoji() -> String {
+            if averageMoodScore.isNaN {
+                return "😡"
+            }
+            
             let roundedScore = Int(averageMoodScore)
             for mood in MoodData.moods {
                 if mood.score == roundedScore {
@@ -55,5 +63,6 @@ extension MoodGraphView {
             }
             return "😡" // Default emoji if no match found
         }
+        
     }
 }
