@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>1014680847684-pie95ii3kah99a66gha22pr35joad11b.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.1014680847684-pie95ii3kah99a66gha22pr35joad11b</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDOitJ1m_9qMabMwHsa1p-dxk2Ib3Nl5Os</string>
+	<key>GCM_SENDER_ID</key>
+	<string>1014680847684</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>co.paul.MoodTracker</string>
+	<key>PROJECT_ID</key>
+	<string>mymood-ios</string>
+	<key>STORAGE_BUCKET</key>
+	<string>mymood-ios.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:1014680847684:ios:2606d57f0ed2290dae4311</string>
+</dict>
+</plist>

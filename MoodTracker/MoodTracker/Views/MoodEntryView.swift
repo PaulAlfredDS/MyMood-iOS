@@ -10,6 +10,7 @@ import CoreData
 
 struct MoodEntryView: View {
     @Environment(\.managedObjectContext) private var viewContext
+    @EnvironmentObject private var authManager: AuthManager
     
     @StateObject private var viewModel = MoodViewModel(
         localSource: LocalMoodSource.shared,
@@ -46,6 +47,7 @@ struct MoodEntryView: View {
                 .listStyle(.automatic)
                 .cornerRadius(10)
                 .padding(EdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20))
+
                 
                 
                 Form {
@@ -98,9 +100,29 @@ struct MoodEntryView: View {
             }.animation(.easeInOut(duration: 0.3), value: showSuccess)
                 .containerRelativeFrame([.horizontal, .vertical])
                 .background(Gradient(colors: [.blue,.orange, .purple]).opacity(0.6))
+                .toolbar {
+                    ToolbarItemGroup(placement: .topBarTrailing, content: {
+                        Button(action:  {
+                            Task {
+                                await signOutUser()
+                            }
+                        }) {
+                            Text("Sign Out")
+                        }
+                    })
+                }
         }
         
         
+    }
+    
+    func signOutUser() async {
+        do {
+           try await authManager.signOut()
+        } catch {
+            print("Error signing out: \(error)")
+        }
+
     }
     
     func startOneTimeTimer() {
