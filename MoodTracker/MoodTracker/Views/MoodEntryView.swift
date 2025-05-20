@@ -29,7 +29,7 @@ struct MoodEntryView: View {
                     .fontWeight(.bold)
                 
                 moodListView
-        
+                
                 noteView
                 
                 datePickerView
@@ -45,6 +45,9 @@ struct MoodEntryView: View {
                         Text("View Mood Graph").frame(maxWidth: .infinity, maxHeight: 50).background().cornerRadius(20).padding()
                     }
                 }
+            }
+            .onAppear() {
+                UIApplication.shared.applicationIconBadgeNumber = 0
             }
             .overlay(alignment:.top) {
                 if self.viewModel.isSuccessfullyAdded {
