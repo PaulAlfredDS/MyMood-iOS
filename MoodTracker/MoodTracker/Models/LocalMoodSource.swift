@@ -7,6 +7,7 @@
 
 import Foundation
 import CoreData
+import Combine
 
 class LocalMoodSource: MoodDataSource {
     static let shared = LocalMoodSource()
@@ -68,14 +69,8 @@ class LocalMoodSource: MoodDataSource {
         }
     }
     
-    func saveMood() {
-        if context.hasChanges {
-            do {
-                try context.save()
-            } catch {
-                print("Failed to save context: \(error)")
-            }
-        }
+    func saveMood() -> AnyPublisher<Void, Error> {
+        return CoreDataManager.shared.saveContextPublisher()
     }
     
     func getMoodsbyMonth(_ month: Int) -> [MoodEntry] {

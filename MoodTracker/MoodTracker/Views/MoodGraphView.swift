@@ -10,7 +10,7 @@ import CoreData
 import SwiftUI
 import Charts
 struct MoodGraphView: View {
-    @StateObject var viewModel = MoodGraphViewModel(localDataSource: LocalMoodSource.shared)
+    @ObservedObject var viewModel = MoodGraphViewModel(localDataSource: LocalMoodSource.shared)
     
     @State var currentMoodScore: String = ""
     @State var currentEmoji: String = ""
