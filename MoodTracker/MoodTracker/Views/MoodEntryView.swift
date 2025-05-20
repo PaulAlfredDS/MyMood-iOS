@@ -18,7 +18,7 @@ struct MoodEntryView: View {
     )
     
     init() {
-        NotificationManager.shared.requestAuthorization()
+        NotificationManager.shared.scheduleNotification()
     }
     
     var body: some View {
