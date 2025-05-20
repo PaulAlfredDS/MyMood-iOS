@@ -29,12 +29,16 @@ class NotificationManager {
         content.sound = .default
         content.badge = 1
         
-        let timeTrigger = UNTimeIntervalNotificationTrigger(timeInterval: 5.0, repeats: false)
+        // Configure the trigger for a daily notification at 7 AM
+        var dateComponents = DateComponents()
+        dateComponents.hour = 7
+        dateComponents.minute = 0
+        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
 
         let request = UNNotificationRequest(
             identifier: UUID().uuidString,
             content: content,
-            trigger: timeTrigger
+            trigger: trigger
         )
         
         UNUserNotificationCenter.current().add(request)
