@@ -36,6 +36,7 @@ struct MoodEntryView: View {
                 
                 Button(action: {
                     viewModel.addMood()
+                    startOneTimeTimer()
                 }) {
                     Text("Save").frame(maxWidth: .infinity, maxHeight: 50).background().cornerRadius(20).padding()
                 }.disabled(!viewModel.isSelectedEmojiValid)
@@ -47,7 +48,7 @@ struct MoodEntryView: View {
                 }
             }
             .onAppear() {
-                UIApplication.shared.applicationIconBadgeNumber = 0
+                UNUserNotificationCenter.current().setBadgeCount(0)
             }
             .overlay(alignment:.top) {
                 if self.viewModel.isSuccessfullyAdded {
