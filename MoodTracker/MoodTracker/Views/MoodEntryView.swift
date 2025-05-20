@@ -17,6 +17,10 @@ struct MoodEntryView: View {
         remoteSource: RemoteMoodSource()
     )
     
+    init() {
+        NotificationManager.shared.requestAuthorization()
+    }
+    
     var body: some View {
         NavigationView {
             VStack(alignment:.center, spacing: 30) {
