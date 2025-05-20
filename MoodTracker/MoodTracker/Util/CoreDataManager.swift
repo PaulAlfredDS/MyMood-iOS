@@ -6,6 +6,7 @@
 //
 
 import CoreData
+import Combine
 
 class CoreDataManager {
     static let shared = CoreDataManager()
@@ -27,16 +28,20 @@ class CoreDataManager {
         let storeURL = self.persistentContainer.persistentStoreCoordinator.persistentStores.first?.url
         print("📂 Core Data SQLite path: \(storeURL?.path ?? "Not found")")
     }
-
-    // Helper to save context safely
-    func saveContext() {
-        let context = viewContext
-        if context.hasChanges {
-            do {
-                try context.save()
-            } catch {
-                print("⚠️ Error saving Core Data context: \(error.localizedDescription)")
+    
+    func saveContextPublisher() -> AnyPublisher<Void, Error> {
+        Future { promise in
+            self.viewContext.perform {
+                do {
+                    if self.viewContext.hasChanges {
+                        try self.viewContext.save()
+                    }
+                    promise(.success(())) // completes successfully
+                } catch {
+                    promise(.failure(error)) // completes with error
+                }
             }
         }
+        .eraseToAnyPublisher()
     }
 }

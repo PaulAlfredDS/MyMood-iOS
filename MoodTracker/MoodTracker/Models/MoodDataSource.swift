@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Combine
 
 
 protocol MoodDataSource {
@@ -15,6 +16,6 @@ protocol MoodDataSource {
     func getMoodEntry(by id: UUID) -> MoodEntry?
     func getMoodsbyMonth(_ month: Int) -> [MoodEntry]
     func updateMood(_ mood: MoodEntry)
-    func saveMood()
+    func saveMood() -> AnyPublisher<Void, Error>
     func doesMoodExist(_ date: Date) -> Bool
 }

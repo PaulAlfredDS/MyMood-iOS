@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Combine
 
 class RemoteMoodSource: MoodDataSource {
     func addMood(_ mood: MoodEntry) {
@@ -31,8 +32,8 @@ class RemoteMoodSource: MoodDataSource {
     
     }
     
-    func saveMood() {
-
+    func saveMood() -> AnyPublisher<Void, Error> {
+        return Just(()).setFailureType(to: Error.self).eraseToAnyPublisher()
     }
     
     func doesMoodExist(_ date: Date) -> Bool {
