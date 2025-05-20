@@ -28,6 +28,7 @@ extension MoodGraphView {
             moodEntries = localDataSource.getMoodsbyMonth(month)
             averageMoodScore = getAveMoodScorePercentage(from: moodEntries.map { Int($0.score) })
             getCurrentEmoji()
+            moodEntries = moodEntries.sorted { $0.date! < $1.date! }
         }
         
         func getDaysOfMonth(of date: Date) -> [String] {
