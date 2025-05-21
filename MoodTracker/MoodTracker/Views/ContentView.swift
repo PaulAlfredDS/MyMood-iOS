@@ -11,6 +11,10 @@ import SwiftUI
 struct ContentView: View{
     @EnvironmentObject var authManager: AuthManager
     
+    init() {
+        NotificationManager.shared.requestAuthorization()
+    }
+    
     var body: some View {
         VStack{
             if authManager.authState == .signedIn {

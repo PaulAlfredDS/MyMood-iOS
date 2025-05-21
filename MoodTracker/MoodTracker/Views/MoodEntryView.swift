@@ -17,6 +17,10 @@ struct MoodEntryView: View {
         remoteSource: RemoteMoodSource()
     )
     
+    init() {
+        NotificationManager.shared.scheduleNotification()
+    }
+    
     var body: some View {
         NavigationView {
             VStack(alignment:.center, spacing: 30) {
@@ -25,13 +29,14 @@ struct MoodEntryView: View {
                     .fontWeight(.bold)
                 
                 moodListView
-        
+                
                 noteView
                 
                 datePickerView
                 
                 Button(action: {
                     viewModel.addMood()
+                    startOneTimeTimer()
                 }) {
                     Text("Save").frame(maxWidth: .infinity, maxHeight: 50).background().cornerRadius(20).padding()
                 }.disabled(!viewModel.isSelectedEmojiValid)
@@ -41,6 +46,9 @@ struct MoodEntryView: View {
                         Text("View Mood Graph").frame(maxWidth: .infinity, maxHeight: 50).background().cornerRadius(20).padding()
                     }
                 }
+            }
+            .onAppear() {
+                UNUserNotificationCenter.current().setBadgeCount(0)
             }
             .overlay(alignment:.top) {
                 if self.viewModel.isSuccessfullyAdded {

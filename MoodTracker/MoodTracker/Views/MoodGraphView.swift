@@ -10,7 +10,7 @@ import CoreData
 import SwiftUI
 import Charts
 struct MoodGraphView: View {
-    @ObservedObject var viewModel = MoodGraphViewModel(localDataSource: LocalMoodSource.shared)
+    @StateObject var viewModel = MoodGraphViewModel(localDataSource: LocalMoodSource.shared)
     
     @State var currentMoodScore: String = ""
     @State var currentEmoji: String = ""
@@ -40,13 +40,10 @@ struct MoodGraphView: View {
             }.frame(height: 300)
              .padding()
         }.onAppear {
-            let currentMonth = Calendar.current.component(.month, from: Date())
-
-            viewModel.fetchMoodEntries(by: currentMonth)
-            let moodScores : [Int] = viewModel.moodEntries.map { Int($0.score) }
-            let averageMoodScore = viewModel.getAveMoodScorePercentage(from: moodScores)
+            let month = Calendar.current.component(.month, from: Date())
+            viewModel.fetchMoodEntries(by: month)
+            currentMoodScore = String(format:"%.2f", viewModel.averageMoodScore)
             currentEmoji = viewModel.getCurrentEmoji()
-            currentMoodScore = String(format:"%.2f", averageMoodScore)
         }.containerRelativeFrame([.horizontal, .vertical])
             .background(Gradient(colors: [.blue,.orange, .purple]).opacity(0.6))
     }

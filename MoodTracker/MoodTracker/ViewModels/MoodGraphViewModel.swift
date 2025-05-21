@@ -12,7 +12,7 @@ extension MoodGraphView {
     class MoodGraphViewModel: ObservableObject {
         @Published var moodEntries: [MoodEntry] = []
         private let localDataSource: MoodDataSource
-        private var averageMoodScore: Double = 0.0
+        @Published var averageMoodScore: Double = 0.0
         
         init(localDataSource: MoodDataSource) {
             self.localDataSource = localDataSource
@@ -20,10 +20,15 @@ extension MoodGraphView {
         
         func fetchMoodEntries() {
             moodEntries = localDataSource.getMoodEntries()
+            averageMoodScore = getAveMoodScorePercentage(from: moodEntries.map { Int($0.score) })
+            getCurrentEmoji()
         }
         
         func fetchMoodEntries(by month: Int) {
             moodEntries = localDataSource.getMoodsbyMonth(month)
+            averageMoodScore = getAveMoodScorePercentage(from: moodEntries.map { Int($0.score) })
+            getCurrentEmoji()
+            moodEntries = moodEntries.sorted { $0.date! < $1.date! }
         }
         
         func getDaysOfMonth(of date: Date) -> [String] {
