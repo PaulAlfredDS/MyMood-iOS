@@ -96,7 +96,7 @@ extension MoodEntryView {
         }
         
         func hasMoodData(on month: Int) -> Bool {
-            return localSource.getMoodsbyMonth(month).count > 0
+            return localSource.getMoodsbyMonth(month).count > 4
         }
     }
 }

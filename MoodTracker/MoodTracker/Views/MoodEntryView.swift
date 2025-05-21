@@ -106,8 +106,6 @@ struct MoodEntryView: View {
                 .fontWeight(.bold)
                 .foregroundColor(Color.theme.bodyText)
             
-            
-            
             TextField("Add a note. . . ", text: $viewModel.note).frame(maxWidth: .infinity, maxHeight: 40).background().cornerRadius(10)
                 .padding()
                 .foregroundColor(Color.theme.bodyText)
