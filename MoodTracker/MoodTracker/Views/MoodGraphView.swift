@@ -22,8 +22,10 @@ struct MoodGraphView: View {
                 .padding()
             Text("Current Mood Score: \(currentMoodScore)%")
                 .font(.headline)
+                .foregroundColor(Color.theme.bodyText)
                 .padding()
             Text("Mood Graph")
+                .foregroundColor(Color.theme.headingText)
                 .font(.largeTitle)
                 .padding()
             Chart {
@@ -35,15 +37,43 @@ struct MoodGraphView: View {
                             .symbol(Circle())
                     }
                 }
-            }.frame(height: 300)
-             .padding()
+            }        .chartXAxis {
+                AxisMarks(preset: .aligned) { _ in
+                    AxisGridLine().foregroundStyle(Color.theme.secondary) // custom grid color
+                    AxisTick()
+                    AxisValueLabel().foregroundStyle(Color.theme.bodyText)
+                }
+            }
+            .chartYAxis {
+                AxisMarks() {
+                    AxisGridLine().foregroundStyle(Color.theme.secondary)
+                    AxisTick()
+                    AxisValueLabel().foregroundStyle(Color.theme.bodyText)
+                }
+            }
+            .padding()
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                Color("BackgroundGradient1"),
+                                Color("BackgroundGradient4")
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+            )
+            .padding().frame(height: 300)
+             
         }.onAppear {
             let month = Calendar.current.component(.month, from: Date())
             viewModel.fetchMoodEntries(by: month)
             currentMoodScore = String(format:"%.2f", viewModel.averageMoodScore)
             currentEmoji = viewModel.getCurrentEmoji()
         }.containerRelativeFrame([.horizontal, .vertical])
-            .background(Gradient(colors: [Color("BG1"), Color("BG2"),Color("BG3"), Color("BG4")]).opacity(0.6))
+            .background(LinearGradient(colors: [Color("BG1"), Color("BG2"),Color("BG3"), Color("BG4")], startPoint: .topLeading, endPoint: .bottomTrailing).opacity(0.6))
     }
 }
     
