@@ -16,12 +16,23 @@ struct SignInView: View {
     @EnvironmentObject var authManager: AuthManager
     
     var body: some View {
-        GoogleSignInButton {
-            Task {
-                await signInWithGoogle()
+        ZStack {
+            Color.theme.secondary.ignoresSafeArea()
+            VStack {
+                Text("Welcome to Mood Tracker!")
+                    .font(.title)
+                    .foregroundColor(.theme.secondary)
+                    .padding()
+                
+                
+                GoogleSignInButton {
+                    Task {
+                        await signInWithGoogle()
+                    }
+                }.frame(width: 280, height: 45, alignment: .center)
             }
-        }.frame(width: 280, height: 45, alignment: .center)
-    
+        }
+            
     }
     
     func signInWithGoogle() async {
@@ -37,5 +48,10 @@ struct SignInView: View {
             print("GoogleSignInError: \(error.localizedDescription)")
         }
     }
-    
+}
+
+#Preview {
+    SignInView()
+        .environmentObject(AuthManager())
+        .environment(\.colorScheme, .light)
 }

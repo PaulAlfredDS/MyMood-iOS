@@ -61,10 +61,20 @@ extension MoodGraphView {
             }
             
             let roundedScore = Int(averageMoodScore)
-            for mood in MoodData.moods {
-                if mood.score == roundedScore {
-                    return mood.emoji
-                }
+            switch roundedScore {
+            case 0...20:
+                return MoodData.moods[4].emoji
+            case 21...40:
+                return MoodData.moods[3].emoji
+            case 41...60:
+                return MoodData.moods[2].emoji
+            case 61...80:
+                return MoodData.moods[1].emoji
+            case 81...100:
+                return MoodData.moods[0].emoji
+            default:
+                break
+                
             }
             return "😡" // Default emoji if no match found
         }
