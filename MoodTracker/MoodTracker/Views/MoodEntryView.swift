@@ -61,7 +61,7 @@ struct MoodEntryView: View {
                 }
             }.animation(.easeInOut(duration: 0.3), value: self.viewModel.isSuccessfullyAdded)
                 .containerRelativeFrame([.horizontal, .vertical])
-                .background(Gradient(colors: [.blue,.orange, .purple]).opacity(0.6))
+                .background(Gradient(colors: [Color("BG1"), Color("BG2"),Color("BG3"), Color("BG4")]).opacity(0.6))
                 .toolbar {
                     ToolbarItemGroup(placement: .topBarTrailing, content: {
                         Button(action:  {

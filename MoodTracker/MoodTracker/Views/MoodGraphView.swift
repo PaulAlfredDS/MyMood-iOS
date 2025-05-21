@@ -18,12 +18,10 @@ struct MoodGraphView: View {
     var body: some View {
         VStack {
             Text(currentEmoji)
-                .font(.largeTitle)
+                .font(.headline)
                 .padding()
             Text("Current Mood Score: \(currentMoodScore)%")
                 .font(.headline)
-                .padding()
-                .foregroundColor(.white)
                 .padding()
             Text("Mood Graph")
                 .font(.largeTitle)
@@ -45,7 +43,7 @@ struct MoodGraphView: View {
             currentMoodScore = String(format:"%.2f", viewModel.averageMoodScore)
             currentEmoji = viewModel.getCurrentEmoji()
         }.containerRelativeFrame([.horizontal, .vertical])
-            .background(Gradient(colors: [.blue,.orange, .purple]).opacity(0.6))
+            .background(Gradient(colors: [Color("BG1"), Color("BG2"),Color("BG3"), Color("BG4")]).opacity(0.6))
     }
 }
     
