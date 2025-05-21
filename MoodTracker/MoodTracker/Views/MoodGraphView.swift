@@ -18,22 +18,18 @@ struct MoodGraphView: View {
     var body: some View {
         VStack {
             Text(currentEmoji)
-                .font(.headline)
+                .font(.largeTitle)
                 .padding()
             Text("Current Mood Score: \(currentMoodScore)%")
                 .font(.headline)
                 .foregroundColor(Color.theme.bodyText)
-                .padding()
-            Text("Mood Graph")
-                .foregroundColor(Color.theme.headingText)
-                .font(.largeTitle)
                 .padding()
             Chart {
                 ForEach(viewModel.moodEntries, id: \.id) { entry in
                     if entry.id != nil {
                         LineMark(x: .value("Days", entry.date ?? Date()), y: .value("Score", entry.score))
                             .interpolationMethod(.catmullRom)
-                            .foregroundStyle(Color.blue)
+                            .foregroundStyle(Color.theme.primary)
                             .symbol(Circle())
                     }
                 }
