@@ -37,6 +37,7 @@ struct MoodEntryView: View {
                 
                 Button(action: {
                     viewModel.addMood()
+                    SoundManager.shared.playSavedSound()
                     startOneTimeTimer()
                 }) {
                     Text("Save").frame(maxWidth: .infinity, maxHeight: 50).background(Color.theme.primary).foregroundColor(Color.theme.primaryButtonText).cornerRadius(20).padding()
