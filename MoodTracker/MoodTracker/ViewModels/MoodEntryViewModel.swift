@@ -17,7 +17,6 @@ extension MoodEntryView {
         private let remoteSource: MoodDataSource
     
         @Published var moods: [MoodEntry] = []
-        @Published var selectedMood: MoodEntry?
         
         @Published var selectedDate: Date = Date()
         @Published var selectedEmoji: String = ""
@@ -26,7 +25,6 @@ extension MoodEntryView {
         
         @Published var isSuccessfullyAdded = false
         
-        // MARK: - Output Publisher (Validation)
         @Published var isSelectedEmojiValid = false
 
         private var cancellables = Set<AnyCancellable>()
