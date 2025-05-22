@@ -9,14 +9,19 @@ import Foundation
 import CoreData
 import SwiftUI
 import Charts
+
 struct MoodGraphView: View {
     @StateObject var viewModel = MoodGraphViewModel(localDataSource: LocalMoodSource.shared)
     
     @State var currentMoodScore: String = ""
     @State var currentEmoji: String = ""
+    @State var selectedMonth = MoodGraphView.MoodGraphViewModel.Months.January
+
 
     var body: some View {
         VStack {
+            monthMenu
+                
             Text(currentEmoji)
                 .font(.largeTitle)
                 .padding()
@@ -64,12 +69,27 @@ struct MoodGraphView: View {
             .padding().frame(height: 300)
              
         }.onAppear {
-            let month = Calendar.current.component(.month, from: Date())
-            viewModel.fetchMoodEntries(by: month)
+            let currentMonth = Calendar.current.component(.month, from: Date())
+            selectedMonth = MoodGraphView.MoodGraphViewModel.Months(rawValue: currentMonth) ?? .January
+            viewModel.fetchMoodEntries(by: currentMonth)
             currentMoodScore = String(format:"%.2f", viewModel.averageMoodScore)
             currentEmoji = viewModel.getCurrentEmoji()
         }.containerRelativeFrame([.horizontal, .vertical])
             .background(LinearGradient(colors: [Color("BG1"), Color("BG2"),Color("BG3"), Color("BG4")], startPoint: .topLeading, endPoint: .bottomTrailing).opacity(0.6))
+    }
+    
+    var monthMenu: some View {
+        Menu(viewModel.getMonthName(selectedMonth) + " ⬇️") {
+            ForEach(MoodGraphView.MoodGraphViewModel.Months.allCases, id: \.self) { month in
+                Button(viewModel.getMonthName(month)) {
+                    selectedMonth = month
+                    viewModel.fetchMoodEntries(by: month.rawValue)
+                }
+            }
+        }
+        .font(.title)
+        .foregroundColor(Color.theme.headingText)
+        .padding()
     }
 }
     
