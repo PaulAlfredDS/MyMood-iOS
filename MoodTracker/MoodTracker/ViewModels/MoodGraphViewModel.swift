@@ -13,6 +13,7 @@ extension MoodGraphView {
         @Published var moodEntries: [MoodEntry] = []
         private let localDataSource: MoodDataSource
         @Published var averageMoodScore: Double = 0.0
+        @Published var hasEnoughData: Bool = false
         
         enum Months: Int, CaseIterable {
             case January = 1, February = 2, March = 3, April = 4, May = 5, June = 6, July = 7, August = 8, September = 9, October = 10, November = 11, December = 12
@@ -91,7 +92,7 @@ extension MoodGraphView {
         
         func getCurrentEmoji() -> String {
             if averageMoodScore.isNaN {
-                return "😡"
+                return "😌"
             }
             
             let roundedScore = Int(averageMoodScore)
@@ -110,7 +111,11 @@ extension MoodGraphView {
                 break
                 
             }
-            return "😡" // Default emoji if no match found
+            return "😌" // Default emoji if no match found
+        }
+        
+        func hasEnoughData(on month: Int) {
+            hasEnoughData = localDataSource.getMoodsbyMonth(month).count > 4
         }
         
     }
