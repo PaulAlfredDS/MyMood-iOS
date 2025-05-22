@@ -37,6 +37,7 @@ struct MoodEntryView: View {
                 
                 Button(action: {
                     viewModel.addMood()
+                    HapticManager.shared.notification(feedbackType: .success)
                     startOneTimeTimer()
                 }) {
                     Text("Save").frame(maxWidth: .infinity, maxHeight: 50).background(Color.theme.primary).foregroundColor(Color.theme.primaryButtonText).cornerRadius(20).padding()
@@ -115,11 +116,15 @@ struct MoodEntryView: View {
     
     var datePickerView: some View {
         DatePicker("Date", selection: $viewModel.selectedDate, in: ...Date(), displayedComponents: .date).background().cornerRadius(10).padding(EdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20))
+            .onChange(of: viewModel.selectedDate) { oldValue, newValue in
+                HapticManager.shared.impact(impactStyle: .soft)
+            }
     }
     
     func signOutUser() async {
         do {
             try await authManager.signOut()
+            HapticManager.shared.impact(impactStyle: .rigid)
         } catch {
             print("Error signing out: \(error)")
         }
