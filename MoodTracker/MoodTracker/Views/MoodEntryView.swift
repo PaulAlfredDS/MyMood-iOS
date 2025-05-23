@@ -17,8 +17,11 @@ struct MoodEntryView: View {
         remoteSource: RemoteMoodSource()
     )
     
-    init() {
+    private var selectedMonthDate = Date()
+    
+    init(currentDate: Date? = Date()) {
         NotificationManager.shared.scheduleNotification()
+        selectedMonthDate = currentDate!
     }
     
     var body: some View {
@@ -44,6 +47,7 @@ struct MoodEntryView: View {
             }
             .onAppear() {
                 UNUserNotificationCenter.current().setBadgeCount(0)
+                viewModel.selectedDate = selectedMonthDate
             }
             .overlay(alignment:.top) {
                 if self.viewModel.isSuccessfullyAdded {

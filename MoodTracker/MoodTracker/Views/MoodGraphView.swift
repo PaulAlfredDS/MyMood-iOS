@@ -16,84 +16,68 @@ struct MoodGraphView: View {
     @State var currentMoodScore: String = ""
     @State var currentEmoji: String = ""
     @State var selectedMonth = MoodGraphView.MoodGraphViewModel.Months.January
-
-    fileprivate func grpahSetup(month: Int) {
-        selectedMonth = MoodGraphView.MoodGraphViewModel.Months(rawValue: month) ?? .January
-        viewModel.fetchMoodEntries(by: month)
-        viewModel.hasEnoughData(on: month)
-        currentMoodScore = String(format:"%.2f", viewModel.averageMoodScore)
-        currentEmoji = viewModel.getCurrentEmoji()
-    }
+    
+    private let currentYear = Calendar.current.component(.year, from: Date())
     
     var body: some View {
-        VStack {
-            monthMenu
+        NavigationView {
+            VStack {
+                monthMenu
                 
-            Text(currentEmoji)
-                .font(.largeTitle)
-                .padding()
-            Text("Current Mood Score: \(currentMoodScore)%")
-                .font(.headline)
-                .foregroundColor(Color.theme.bodyText)
-                .padding()
-            ZStack {
-                Chart {
-                    ForEach(viewModel.moodEntries, id: \.id) { entry in
-                        if entry.id != nil {
-                            LineMark(x: .value("Days", entry.date ?? Date()), y: .value("Score", entry.score))
-                                .interpolationMethod(.catmullRom)
-                                .foregroundStyle(Color.theme.primary)
-                                .symbol(Circle())
+                Text(currentEmoji)
+                    .font(.largeTitle)
+                    .padding()
+                
+                ZStack {
+                    
+                    if viewModel.hasEnoughData {
+                        
+                        Text("Current Mood Score: \(currentMoodScore)%")
+                            .font(.headline)
+                            .foregroundColor(Color.theme.bodyText)
+                            .padding()
+                        
+                        graphView
+                    } else {
+                        ZStack {
+                            Rectangle()
+                                .fill(Color.theme.disabledText)
+                                .opacity(0.5)
+                                .frame(height: 300)
+                                .cornerRadius(16)
+                                .padding(EdgeInsets(top: 0, leading: 15, bottom: 0, trailing: 15))
+                            Text("Add atleast 5 mood logs to see the graph")
+                                .foregroundColor(Color.theme.bodyText)
+                                .font(.headline)
+                            
                         }
                     }
-                }        .chartXAxis {
-                    AxisMarks(preset: .aligned) { _ in
-                        AxisGridLine().foregroundStyle(Color.theme.secondary) // custom grid color
-                        AxisTick()
-                        AxisValueLabel().foregroundStyle(Color.theme.bodyText)
-                    }
                 }
-                .chartYAxis {
-                    AxisMarks() {
-                        AxisGridLine().foregroundStyle(Color.theme.secondary)
-                        AxisTick()
-                        AxisValueLabel().foregroundStyle(Color.theme.bodyText)
-                    }
+                
+                NavigationLink(
+                    destination: MoodEntryView(
+                        currentDate: Calendar.current.date(
+                            from: DateComponents(year: currentYear, month:selectedMonth.rawValue)
+                        )!
+                    )
+                ) {
+                    Text("Add Mood View")
+                        .frame(
+                            maxWidth: .infinity,
+                            maxHeight:50)
+                        .background(Color.theme.primary)
+                        .foregroundColor(Color.theme.primaryButtonText)
+                        .cornerRadius(20).padding()
+                    
                 }
-                .padding()
-                .background(
-                    RoundedRectangle(cornerRadius: 16)
-                        .fill(
-                            LinearGradient(
-                                colors: [
-                                    Color("BackgroundGradient1"),
-                                    Color("BackgroundGradient4")
-                                ],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                )
-                .padding().frame(height: 300)
-                ZStack {
-                    Rectangle()
-                        .fill(Color.theme.disabledText)
-                        .opacity(0.95)
-                        .frame(height: 300)
-                        .cornerRadius(16)
-                        .padding(EdgeInsets(top: 0, leading: 15, bottom: 0, trailing: 15))
-                    Text("Add atleast 5 mood logs to see the graph")
-                        .foregroundColor(Color.theme.bodyText)
-                        .font(.headline)
-
-                }
-            }
-             
-        }.onAppear {
-            let currentMonth = Calendar.current.component(.month, from: Date())
-            grpahSetup(month: currentMonth)
-        }.containerRelativeFrame([.horizontal, .vertical])
-            .background(LinearGradient(colors: [Color("BG1"), Color("BG2"),Color("BG3"), Color("BG4")], startPoint: .topLeading, endPoint: .bottomTrailing).opacity(0.6))
+                
+                
+            }.onAppear {
+                let currentMonth = Calendar.current.component(.month, from: Date())
+                grpahSetup(month: currentMonth)
+            }.containerRelativeFrame([.horizontal, .vertical])
+                .background(LinearGradient(colors: [Color("BG1"), Color("BG2"),Color("BG3"), Color("BG4")], startPoint: .topLeading, endPoint: .bottomTrailing).opacity(0.6))
+        }
     }
     
     var monthMenu: some View {
@@ -109,6 +93,55 @@ struct MoodGraphView: View {
         .font(.title)
         .foregroundColor(Color.theme.headingText)
         .padding()
+    }
+    
+    var graphView: some View {
+        Chart {
+            ForEach(viewModel.moodEntries, id: \.id) { entry in
+                if entry.id != nil {
+                    LineMark(x: .value("Days", entry.date ?? Date()), y: .value("Score", entry.score))
+                        .interpolationMethod(.catmullRom)
+                        .foregroundStyle(Color.theme.primary)
+                        .symbol(Circle())
+                }
+            }
+        }        .chartXAxis {
+            AxisMarks(preset: .aligned) { _ in
+                AxisGridLine().foregroundStyle(Color.theme.secondary) // custom grid color
+                AxisTick()
+                AxisValueLabel().foregroundStyle(Color.theme.bodyText)
+            }
+        }
+        .chartYAxis {
+            AxisMarks() {
+                AxisGridLine().foregroundStyle(Color.theme.secondary)
+                AxisTick()
+                AxisValueLabel().foregroundStyle(Color.theme.bodyText)
+            }
+        }
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            Color("BackgroundGradient1"),
+                            Color("BackgroundGradient4")
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+        )
+        .padding().frame(height: 300)
+    }
+    
+    private func grpahSetup(month: Int) {
+        selectedMonth = MoodGraphView.MoodGraphViewModel.Months(rawValue: month) ?? .January
+        viewModel.fetchMoodEntries(by: month)
+        viewModel.hasEnoughData(on: month)
+        currentMoodScore = String(format:"%.2f", viewModel.averageMoodScore)
+        currentEmoji = viewModel.getCurrentEmoji()
     }
 }
     
