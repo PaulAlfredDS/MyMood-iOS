@@ -106,15 +106,16 @@ struct MoodGraphView: View {
                         .symbol(Circle())
                 }
             }
-        }        .chartXAxis {
+        }
+        .chartXAxis {
             AxisMarks(preset: .aligned) { _ in
-                AxisGridLine().foregroundStyle(Color.theme.secondary) // custom grid color
+                AxisGridLine().foregroundStyle(Color.theme.secondary)
                 AxisTick()
                 AxisValueLabel().foregroundStyle(Color.theme.bodyText)
             }
         }
         .chartYAxis {
-            AxisMarks() {
+            AxisMarks(values: Array(1...5)) {
                 AxisGridLine().foregroundStyle(Color.theme.secondary)
                 AxisTick()
                 AxisValueLabel().foregroundStyle(Color.theme.bodyText)
