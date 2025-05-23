@@ -31,13 +31,14 @@ struct MoodGraphView: View {
                 ZStack {
                     
                     if viewModel.hasEnoughData {
-                        
-                        Text("Current Mood Score: \(currentMoodScore)%")
-                            .font(.headline)
-                            .foregroundColor(Color.theme.bodyText)
-                            .padding()
-                        
-                        graphView
+                        VStack {
+                            Text("Current Mood Score: \(currentMoodScore)%")
+                                .font(.headline)
+                                .foregroundColor(Color.theme.bodyText)
+                                .padding()
+                            
+                            graphView
+                        }
                     } else {
                         ZStack {
                             Rectangle()
