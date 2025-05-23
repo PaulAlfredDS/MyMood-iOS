@@ -127,8 +127,8 @@ struct MoodGraphView: View {
                 .fill(
                     LinearGradient(
                         colors: [
-                            Color("BackgroundGradient1"),
-                            Color("BackgroundGradient4")
+                            Color.theme.accent,
+                            Color("BackgroundGradient1")
                         ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
