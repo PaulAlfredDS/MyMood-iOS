@@ -11,6 +11,8 @@ import CoreData
 struct MoodEntryView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @EnvironmentObject private var authManager: AuthManager
+    @Environment(\.dismiss) var dismiss
+
     
     @StateObject private var viewModel = MoodEntryViewModel(
         localSource: LocalMoodSource.shared,
@@ -39,8 +41,13 @@ struct MoodEntryView: View {
                 datePickerView
                 
                 Button(action: {
-                    viewModel.addMood()
-                    startOneTimeTimer()
+                    viewModel.addMood {
+                        viewModel.isSuccessfullyAdded = true
+                        startOneTimeTimer()
+                    } onFailure: { error in
+                        print("Error adding mood: \(error)")
+                    }
+
                 }) {
                     Text("Save").frame(maxWidth: .infinity, maxHeight: 50).background(Color.theme.primary).foregroundColor(Color.theme.primaryButtonText).cornerRadius(20).padding()
                 }.disabled(!viewModel.isSelectedEmojiValid)
@@ -126,6 +133,7 @@ struct MoodEntryView: View {
     func startOneTimeTimer() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             self.viewModel.isSuccessfullyAdded = false
+            dismiss()
         }
     }
 }
