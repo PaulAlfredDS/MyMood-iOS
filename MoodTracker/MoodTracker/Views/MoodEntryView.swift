@@ -41,13 +41,6 @@ struct MoodEntryView: View {
                 }) {
                     Text("Save").frame(maxWidth: .infinity, maxHeight: 50).background(Color.theme.primary).foregroundColor(Color.theme.primaryButtonText).cornerRadius(20).padding()
                 }.disabled(!viewModel.isSelectedEmojiValid)
-                
-                if viewModel.hasMoodData(on: Calendar.current.component(.month, from: Date())) {
-                    NavigationLink(destination: MoodGraphView()) {
-                        Text("View Mood Graph").frame(maxWidth: .infinity, maxHeight: 50).background(Color.theme.secondary).foregroundColor(Color.theme.secondaryButtonText).cornerRadius(20).padding()
-                        
-                    }
-                }
             }
             .onAppear() {
                 UNUserNotificationCenter.current().setBadgeCount(0)

@@ -92,9 +92,5 @@ extension MoodEntryView {
             // Implement your network reachability check here
             return true // Placeholder for actual network check
         }
-        
-        func hasMoodData(on month: Int) -> Bool {
-            return localSource.getMoodsbyMonth(month).count > 4
-        }
     }
 }
