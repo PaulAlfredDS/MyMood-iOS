@@ -15,7 +15,7 @@ struct MoodGraphView: View {
     
     @State var currentMoodScore: String = ""
     @State var currentEmoji: String = ""
-    @State var selectedMonth = MoodGraphView.MoodGraphViewModel.Months.January
+    @State var selectedMonth = Constants.MonthHelper.Months.January
     
     private let currentYear = Calendar.current.component(.year, from: Date())
     
@@ -78,13 +78,22 @@ struct MoodGraphView: View {
                 grpahSetup(month: currentMonth)
             }.containerRelativeFrame([.horizontal, .vertical])
                 .background(LinearGradient(colors: [Color("BG1"), Color("BG2"),Color("BG3"), Color("BG4")], startPoint: .topLeading, endPoint: .bottomTrailing).opacity(0.6))
+                .navigationBarItems(trailing:
+                                        NavigationLink {
+                    MoodListView(month: selectedMonth.rawValue)
+                } label: {
+                    Text("List").font(.body).foregroundColor(Color.theme.accent)
         }
+                                    
+                )
+        }
+        
     }
     
     var monthMenu: some View {
-        Menu(viewModel.getMonthName(selectedMonth) + " ⬇️") {
-            ForEach(MoodGraphView.MoodGraphViewModel.Months.allCases, id: \.self) { month in
-                Button(viewModel.getMonthName(month)) {
+        Menu(Constants.MonthHelper.getMonthName(selectedMonth) + " ⬇️") {
+            ForEach(Constants.MonthHelper.Months.allCases, id: \.self) { month in
+                Button(Constants.MonthHelper.getMonthName(month)) {
                     selectedMonth = month
                     viewModel.fetchMoodEntries(by: month.rawValue)
                     viewModel.hasEnoughData(on: month.rawValue)
