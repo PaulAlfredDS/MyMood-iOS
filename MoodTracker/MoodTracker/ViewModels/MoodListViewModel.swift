@@ -39,7 +39,7 @@ extension MoodListView {
                 }
                 .collect()
                 .map { moods in
-                    moods.sorted { $0.date! > $1.date! }
+                    moods.sorted { $0.date! < $1.date! }
                 }
                 .receive(on: RunLoop.main)
                 .sink { [weak self] sortedMoods in
@@ -51,7 +51,7 @@ extension MoodListView {
         
         func formattedDay(from date: Date) -> String {
             let formatter = DateFormatter()
-            formatter.dateFormat = "d EEE" // e.g. 21 Tue
+            formatter.dateFormat = "dd EEE" // e.g. 21 Tue
             return formatter.string(from: date)
         }
 

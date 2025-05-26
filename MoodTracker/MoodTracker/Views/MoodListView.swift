@@ -22,17 +22,17 @@ struct MoodListView: View {
             ScrollView {
                 LazyVStack(spacing: 16) {
                     ForEach(viewModel.moods, id:\.id) { mood in
-                        HStack {
-//                            Text("\(mood.emoji!)")
+                        HStack(alignment: .center, spacing: 16) {
+                            Text("\(viewModel.formattedDay(from: mood.date ?? Date()))")
+                            Text("\(mood.moodEmoji ?? "🙂")")
                             Text("\(mood.score)")
-//                            Text(viewModel.formattedDay(from: mood.date))
                         }
                         .font(.body)
                         .foregroundColor(Color.theme.bodyText)
                     }
                 }
             }
-            .navigationTitle("Mood List for \(monthName)")
+            .navigationTitle("\(monthName) Moods")
         }
         .onAppear() {
             viewModel.fetchMoodEntries(by: self.month)
