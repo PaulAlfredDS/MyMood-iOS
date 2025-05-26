@@ -83,7 +83,7 @@ struct MoodGraphView: View {
                     MoodListView(month: selectedMonth.rawValue)
                 } label: {
                     Text("List").font(.body).foregroundColor(Color.theme.accent)
-        }
+                }
                                     
                 )
         }
@@ -148,15 +148,15 @@ struct MoodGraphView: View {
     }
     
     private func grpahSetup(month: Int) {
-        selectedMonth = MoodGraphView.MoodGraphViewModel.Months(rawValue: month) ?? .January
+        selectedMonth = Constants.MonthHelper.Months(rawValue: month) ?? .January
         viewModel.fetchMoodEntries(by: month)
         viewModel.hasEnoughData(on: month)
         currentMoodScore = String(format:"%.2f", viewModel.averageMoodScore)
         currentEmoji = viewModel.getCurrentEmoji()
     }
 }
-    
-    
+
+
 
 #Preview {
     MoodGraphView()
