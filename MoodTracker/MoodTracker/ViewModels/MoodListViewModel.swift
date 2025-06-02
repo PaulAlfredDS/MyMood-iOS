@@ -51,7 +51,7 @@ extension MoodListView {
         
         func formattedDay(from date: Date) -> String {
             let formatter = DateFormatter()
-            formatter.dateFormat = "dd EEE" // e.g. 21 Tue
+            formatter.dateFormat = "dd\nEEE" // e.g. 21 Tue
             return formatter.string(from: date)
         }
 
