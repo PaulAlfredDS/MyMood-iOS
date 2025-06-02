@@ -75,7 +75,7 @@ struct MoodGraphView: View {
                 
             }.onAppear {
                 let currentMonth = Calendar.current.component(.month, from: Date())
-                grpahSetup(month: currentMonth)
+                graphSetup(month: currentMonth)
             }.containerRelativeFrame([.horizontal, .vertical])
                 .background(LinearGradient(colors: [Color("BG1"), Color("BG2"),Color("BG3"), Color("BG4")], startPoint: .topLeading, endPoint: .bottomTrailing).opacity(0.6))
                 .navigationBarItems(trailing:
@@ -97,6 +97,8 @@ struct MoodGraphView: View {
                     selectedMonth = month
                     viewModel.fetchMoodEntries(by: month.rawValue)
                     viewModel.hasEnoughData(on: month.rawValue)
+                    currentMoodScore = String(format:"%.2f", viewModel.averageMoodScore)
+                    currentEmoji = viewModel.getCurrentEmoji()
                 }
             }
         }
@@ -147,7 +149,7 @@ struct MoodGraphView: View {
         .padding().frame(height: 300)
     }
     
-    private func grpahSetup(month: Int) {
+    private func graphSetup(month: Int) {
         selectedMonth = Constants.MonthHelper.Months(rawValue: month) ?? .January
         viewModel.fetchMoodEntries(by: month)
         viewModel.hasEnoughData(on: month)
