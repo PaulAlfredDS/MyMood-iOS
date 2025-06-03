@@ -16,6 +16,11 @@ extension MoodEntryView {
         private let localSource: MoodDataSource
         private let remoteSource: MoodDataSource
         
+        enum ViewMode {
+            case create
+            case edit(MoodEntry)
+        }
+        
         @Published var moods: [MoodEntry] = []
         
         @Published var selectedDate: Date = Date()
@@ -23,15 +28,20 @@ extension MoodEntryView {
         @Published var note: String = ""
         @Published var score: Int16 = 0
         
+        @Published var editingMood: MoodEntry?
+        
         @Published var isSuccessfullyAdded = false
         
         @Published var isSelectedEmojiValid = false
         
+        @Published var mode: ViewMode = .create
+        
         private var cancellables = Set<AnyCancellable>()
         
-        init(localSource: MoodDataSource, remoteSource: MoodDataSource) {
+        init(localSource: MoodDataSource, remoteSource: MoodDataSource, mode: ViewMode = .create) {
             self.localSource = localSource
             self.remoteSource = remoteSource
+            self.mode = mode
             
             Publishers.CombineLatest($selectedEmoji, $note)
                 .map { emoji, note  in
@@ -85,24 +95,6 @@ extension MoodEntryView {
                 })
                 .store(in: &cancellables)
         }
-        
-//        func syncMoods() {
-//            localSource.saveMood().receive(on: RunLoop.main)
-//                .sink(receiveCompletion: { completion in
-//                    switch completion {
-//                    case .finished:
-//                        print("Mood saved successfully")
-//                    case .failure(let error):
-//                        print("Error saving mood: \(error)")
-//                    }
-//                }, receiveValue: { [weak self] in
-//                    self?.isSuccessfullyAdded = true
-//                })
-//                .store(in: &cancellables)
-//            if NetworkUtils.shared.isConnected {
-//                remoteSource.saveMood()
-//            }
-//        }
         
         private func isOnline() -> Bool {
             // Implement your network reachability check here
