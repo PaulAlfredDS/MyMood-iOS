@@ -16,7 +16,7 @@ extension MoodEntryView {
         private let localSource: MoodDataSource
         private let remoteSource: MoodDataSource
         
-        enum ViewMode {
+        enum ViewMode: Equatable {
             case create
             case edit(MoodEntry)
         }
@@ -42,6 +42,11 @@ extension MoodEntryView {
             self.localSource = localSource
             self.remoteSource = remoteSource
             self.mode = mode
+            
+            if case .edit(let entry) = mode {
+                self.editingMood = entry
+                setupForEditing()
+            }
             
             Publishers.CombineLatest($selectedEmoji, $note)
                 .map { emoji, note  in
@@ -94,6 +99,13 @@ extension MoodEntryView {
                     self?.isSuccessfullyAdded = true
                 })
                 .store(in: &cancellables)
+        }
+        
+        func setupForEditing() {
+            self.selectedEmoji = editingMood?.moodEmoji ?? ""
+            self.note = editingMood?.note ?? ""
+            self.selectedDate = editingMood?.date ?? Date()
+            self.score = editingMood?.score ?? 0
         }
         
         private func isOnline() -> Bool {

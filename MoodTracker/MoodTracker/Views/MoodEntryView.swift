@@ -12,6 +12,7 @@ struct MoodEntryView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @EnvironmentObject private var authManager: AuthManager
     @Environment(\.dismiss) var dismiss
+    @State private var viewMode: MoodEntryViewModel.ViewMode = .create
 
     
     @StateObject private var viewModel = MoodEntryViewModel(
@@ -19,17 +20,19 @@ struct MoodEntryView: View {
         remoteSource: RemoteMoodSource()
     )
     
+    
     private var selectedMonthDate = Date()
     
-    init(currentDate: Date? = Date()) {
+    init(currentDate: Date? = Date(), viewMode: MoodEntryViewModel.ViewMode = .create) {
         NotificationManager.shared.scheduleNotification()
         selectedMonthDate = currentDate!
+        self.viewMode = viewMode
     }
     
     var body: some View {
         NavigationView {
             VStack(alignment:.center, spacing: 30) {
-                Text("How are you today?")
+                Text(greeting)
                     .font(.largeTitle)
                     .fontWeight(.bold)
                     .foregroundColor(Color.theme.headingText)
@@ -38,7 +41,9 @@ struct MoodEntryView: View {
                 
                 noteView
                 
-                datePickerView
+                if viewMode == .create {
+                    datePickerView
+                }
                 
                 Button(action: {
                     viewModel.addMood {
@@ -55,6 +60,7 @@ struct MoodEntryView: View {
             .onAppear() {
                 UNUserNotificationCenter.current().setBadgeCount(0)
                 viewModel.selectedDate = selectedMonthDate
+                viewModel.mode = self.viewMode
             }
             .overlay(alignment:.top) {
                 if self.viewModel.isSuccessfullyAdded {
@@ -110,7 +116,9 @@ struct MoodEntryView: View {
                 .fontWeight(.bold)
                 .foregroundColor(Color.theme.bodyText)
             
-            TextField("Add a note. . . ", text: $viewModel.note).frame(maxWidth: .infinity, maxHeight: 40).background().cornerRadius(10)
+            TextField("Add a note. . . ", text: $viewModel.note)
+                .frame(maxWidth: .infinity, maxHeight: 40)
+                .cornerRadius(10)
                 .padding()
                 .foregroundColor(Color.theme.bodyText)
             
@@ -136,8 +144,57 @@ struct MoodEntryView: View {
             dismiss()
         }
     }
+    
+    
 }
 
+
+extension MoodEntryView {
+    var title: String {
+        switch viewMode {
+        case .create:
+            return "Add Mood"
+        case .edit(let mood):
+            return "Edit Mood for \(mood.date?.formatted(date: .abbreviated, time: .omitted) ?? "")"
+        }
+    }
+    
+    var greeting: String {
+        switch viewMode {
+        case .create:
+            return "How are you feeling today?"
+        case .edit(let mood):
+            return "Edit your mood for \(mood.date?.formatted(date: .abbreviated, time: .omitted) ?? "")"
+        }
+    }
+    
+    var date: Date {
+        switch viewMode {
+        case .create:
+            return selectedMonthDate
+        case .edit(let mood):
+            return mood.date ?? Date()
+        }
+    }
+        
+    var emoji: String {
+        switch viewMode {
+        case .create:
+            return viewModel.selectedEmoji
+        case .edit(let mood):
+            return mood.moodEmoji ?? "☺️"
+        }
+    }
+        
+    var note: String {
+        switch viewMode {
+        case .create:
+            return viewModel.note
+        case .edit(let mood):
+            return mood.note ?? ""
+        }
+    }
+}
 
 #Preview {
     MoodEntryView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)

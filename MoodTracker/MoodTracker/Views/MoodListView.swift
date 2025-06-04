@@ -75,18 +75,22 @@ struct MoodRowView: View {
     let onDelete: () -> Void
     
     var body: some View {
-        HStack(alignment: .center, spacing: 16) {
-            dateView
-            moodContentView
-            Spacer()
-        }
-        .frame(height: 80)
-        .padding(.horizontal, 16)
-        .background(Color.theme.border ?? Color(.systemBackground))
-        .cornerRadius(12)
-        .contentShape(Rectangle())
-        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-            deleteButton
+        NavigationLink(destination: MoodEntryView(viewMode: MoodEntryView.MoodEntryViewModel.ViewMode.edit(mood))) {
+            // Navigate to MoodEntryView with edit mode
+            
+            HStack(alignment: .center, spacing: 16) {
+                dateView
+                moodContentView
+                Spacer()
+            }
+            .frame(height: 80)
+            .padding(.horizontal, 16)
+            .background(Color.theme.border)
+            .cornerRadius(12)
+            .contentShape(Rectangle())
+            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                deleteButton
+            }
         }
     }
 }
