@@ -52,7 +52,6 @@ struct MoodEntryView: View {
                     } onFailure: { error in
                         print("Error adding mood: \(error)")
                     }
-
                 }) {
                     Text("Save").frame(maxWidth: .infinity, maxHeight: 50).background(Color.theme.primary).foregroundColor(Color.theme.primaryButtonText).cornerRadius(20).padding()
                 }.disabled(!viewModel.isSelectedEmojiValid)
