@@ -11,14 +11,19 @@ import CoreData
 struct MoodEntryView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @EnvironmentObject private var authManager: AuthManager
+    @Environment(\.dismiss) var dismiss
+
     
     @StateObject private var viewModel = MoodEntryViewModel(
         localSource: LocalMoodSource.shared,
         remoteSource: RemoteMoodSource()
     )
     
-    init() {
+    private var selectedMonthDate = Date()
+    
+    init(currentDate: Date? = Date()) {
         NotificationManager.shared.scheduleNotification()
+        selectedMonthDate = currentDate!
     }
     
     var body: some View {
@@ -36,22 +41,19 @@ struct MoodEntryView: View {
                 datePickerView
                 
                 Button(action: {
-                    viewModel.addMood()
-                    SoundManager.shared.playSavedSound()
-                    startOneTimeTimer()
+                    viewModel.addMood {
+                        viewModel.isSuccessfullyAdded = true
+                        startOneTimeTimer()
+                    } onFailure: { error in
+                        print("Error adding mood: \(error)")
+                    }
                 }) {
                     Text("Save").frame(maxWidth: .infinity, maxHeight: 50).background(Color.theme.primary).foregroundColor(Color.theme.primaryButtonText).cornerRadius(20).padding()
                 }.disabled(!viewModel.isSelectedEmojiValid)
-                
-                if viewModel.hasMoodData(on: Calendar.current.component(.month, from: Date())) {
-                    NavigationLink(destination: MoodGraphView()) {
-                        Text("View Mood Graph").frame(maxWidth: .infinity, maxHeight: 50).background(Color.theme.secondary).foregroundColor(Color.theme.secondaryButtonText).cornerRadius(20).padding()
-                        
-                    }
-                }
             }
             .onAppear() {
                 UNUserNotificationCenter.current().setBadgeCount(0)
+                viewModel.selectedDate = selectedMonthDate
             }
             .overlay(alignment:.top) {
                 if self.viewModel.isSuccessfullyAdded {
@@ -130,6 +132,7 @@ struct MoodEntryView: View {
     func startOneTimeTimer() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             self.viewModel.isSuccessfullyAdded = false
+            dismiss()
         }
     }
 }
