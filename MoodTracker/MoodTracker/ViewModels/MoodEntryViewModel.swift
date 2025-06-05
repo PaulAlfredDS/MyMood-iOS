@@ -15,9 +15,8 @@ extension MoodEntryView {
     class MoodEntryViewModel: ObservableObject {
         private let localSource: MoodDataSource
         private let remoteSource: MoodDataSource
-    
+        
         @Published var moods: [MoodEntry] = []
-        @Published var selectedMood: MoodEntry?
         
         @Published var selectedDate: Date = Date()
         @Published var selectedEmoji: String = ""
@@ -26,9 +25,8 @@ extension MoodEntryView {
         
         @Published var isSuccessfullyAdded = false
         
-        // MARK: - Output Publisher (Validation)
         @Published var isSelectedEmojiValid = false
-
+        
         private var cancellables = Set<AnyCancellable>()
         
         init(localSource: MoodDataSource, remoteSource: MoodDataSource) {
@@ -43,9 +41,9 @@ extension MoodEntryView {
                 .assign(to: &$isSelectedEmojiValid)
         }
         
-        func addMood() -> Bool{
-            guard !selectedEmoji.isEmpty, !note.isEmpty else { return false }
-
+        func addMood(onSuccess: @escaping () -> Void, onFailure: @escaping (Error) -> Void) {
+            guard !selectedEmoji.isEmpty, !note.isEmpty else { return }
+            
             let newMood = MoodEntry(context: CoreDataManager.shared.persistentContainer.viewContext)
             newMood.id = UUID()
             newMood.moodEmoji = selectedEmoji
@@ -57,7 +55,8 @@ extension MoodEntryView {
             // Check if mood already exists
             if localSource.doesMoodExist(newMood.date!) {
                 print("Mood already exists for this date.")
-                return true
+                onFailure(NSError(domain: "MoodEntryError", code: 1, userInfo: [NSLocalizedDescriptionKey: "Mood already exists for this date."]))
+                return
             }
             
             
@@ -68,35 +67,46 @@ extension MoodEntryView {
             if isOnline() {
                 remoteSource.addMood(newMood)
             }
-            syncMoods()
-            return false
-        }
-        
-        func syncMoods() {
             localSource.saveMood().receive(on: RunLoop.main)
                 .sink(receiveCompletion: { completion in
                     switch completion {
-                    case .finished:
-                        print("Mood saved successfully")
-                    case .failure(let error):
-                        print("Error saving mood: \(error)")
+                        case .finished:
+                            print("Mood saved successfully")
+                            onSuccess()
+                        break
+                            
+                        case .failure(let error):
+                            print("Error saving mood: \(error)")
+                            onFailure(error)
+                        break
                     }
                 }, receiveValue: { [weak self] in
                     self?.isSuccessfullyAdded = true
                 })
                 .store(in: &cancellables)
-            if NetworkUtils.shared.isConnected {
-                remoteSource.saveMood()
-            }
         }
+        
+//        func syncMoods() {
+//            localSource.saveMood().receive(on: RunLoop.main)
+//                .sink(receiveCompletion: { completion in
+//                    switch completion {
+//                    case .finished:
+//                        print("Mood saved successfully")
+//                    case .failure(let error):
+//                        print("Error saving mood: \(error)")
+//                    }
+//                }, receiveValue: { [weak self] in
+//                    self?.isSuccessfullyAdded = true
+//                })
+//                .store(in: &cancellables)
+//            if NetworkUtils.shared.isConnected {
+//                remoteSource.saveMood()
+//            }
+//        }
         
         private func isOnline() -> Bool {
             // Implement your network reachability check here
             return true // Placeholder for actual network check
-        }
-        
-        func hasMoodData(on month: Int) -> Bool {
-            return localSource.getMoodsbyMonth(month).count > 4
         }
     }
 }

@@ -18,7 +18,7 @@ struct ContentView: View{
     var body: some View {
         VStack{
             if authManager.authState == .signedIn {
-                MoodEntryView()
+                MoodGraphView()
             } else {
                 SignInView()
             }
