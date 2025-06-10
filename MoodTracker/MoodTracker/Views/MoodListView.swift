@@ -12,6 +12,8 @@ struct MoodListView: View {
     @StateObject private var viewModel = MoodListViewModel(localDataSource: LocalMoodSource.shared)
     private let month: Int
     @State private var monthName: String = ""
+    @State private var showingEditView = false
+    @State private var selectedMoodForEdit: MoodEntry?
     
     init(month: Int = 12) {
         self.month = month
@@ -25,6 +27,7 @@ struct MoodListView: View {
                         MoodRowView(
                             mood: mood,
                             formattedDay: viewModel.formattedDay(from: mood.date ?? Date()),
+                            onEdit: { editMoodEntry(mood) },
                             onDelete: { deleteMoodEntry(mood) }
                         )
                     }
@@ -32,9 +35,13 @@ struct MoodListView: View {
                 .padding(.horizontal)
             }
             .navigationTitle(navigationTitle)
+            .navigationBarTitleDisplayMode(.large)
         }
         .onAppear(perform: setupView)
         .background(backgroundGradient)
+        .sheet(item: $selectedMoodForEdit) { mood in
+            MoodEntryView(viewMode: .edit(mood))
+        }
     }
 }
 
@@ -51,6 +58,7 @@ private extension MoodListView {
             endPoint: .bottomTrailing
         )
         .opacity(0.6)
+        .ignoresSafeArea()
     }
 }
 
@@ -63,7 +71,13 @@ private extension MoodListView {
         )
     }
     
+    func editMoodEntry(_ entry: MoodEntry) {
+        selectedMoodForEdit = entry
+        HapticManager.shared.impact(.light)
+    }
+    
     func deleteMoodEntry(_ entry: MoodEntry) {
+        HapticManager.shared.impact(.medium)
         viewModel.deleteMoodEntry(entry)
     }
 }
@@ -72,25 +86,38 @@ private extension MoodListView {
 struct MoodRowView: View {
     let mood: MoodEntry
     let formattedDay: String
+    let onEdit: () -> Void
     let onDelete: () -> Void
     
+    @State private var isPressed = false
+    
     var body: some View {
-        NavigationLink(destination: MoodEntryView(viewMode: MoodEntryView.MoodEntryViewModel.ViewMode.edit(mood))) {
-            // Navigate to MoodEntryView with edit mode
-            
+        Button(action: onEdit) {
             HStack(alignment: .center, spacing: 16) {
                 dateView
                 moodContentView
                 Spacer()
+                chevronIcon
             }
             .frame(height: 80)
             .padding(.horizontal, 16)
-            .background(Color.theme.border)
-            .cornerRadius(12)
-            .contentShape(Rectangle())
-            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                deleteButton
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color.theme.border)
+                    .shadow(color: .black.opacity(0.05), radius: isPressed ? 2 : 5, y: isPressed ? 1 : 2)
+            )
+            .scaleEffect(isPressed ? 0.98 : 1.0)
+        }
+        .buttonStyle(PlainButtonStyle())
+        .onLongPressGesture(minimumDuration: 0.1, maximumDistance: .infinity, pressing: { pressing in
+            withAnimation(.easeInOut(duration: 0.1)) {
+                isPressed = pressing
             }
+        }) {
+            // Long press action if needed
+        }
+        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+            deleteButton
         }
     }
 }
@@ -116,7 +143,7 @@ private extension MoodRowView {
             Text(moodEmoji)
                 .font(.title)
             
-            VStack(alignment: .leading, spacing: 2) {
+            VStack(alignment: .leading, spacing: 4) {
                 Text(moodNote)
                     .font(.body)
                     .fontWeight(.medium)
@@ -124,19 +151,28 @@ private extension MoodRowView {
                     .lineLimit(2)
                     .truncationMode(.tail)
                 
-                if mood.score > 0 {
-                    HStack(spacing: 4) {
-                        Image(systemName: "heart.fill")
-                            .foregroundColor(.red)
-                            .font(.caption)
-                        Text("\(mood.score)/5")
-                            .font(.caption)
-                            .foregroundColor(Color.theme.bodyText.opacity(0.7))
+                HStack(spacing: 8) {
+                    if mood.score > 0 {
+                        HStack(spacing: 4) {
+                            Image(systemName: "heart.fill")
+                                .foregroundColor(.red)
+                                .font(.caption)
+                            Text("\(mood.score)/5")
+                                .font(.caption)
+                                .foregroundColor(Color.theme.bodyText.opacity(0.7))
+                        }
                     }
+                
                 }
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+    
+    var chevronIcon: some View {
+        Image(systemName: "chevron.right")
+            .font(.caption)
+            .foregroundColor(Color.theme.bodyText.opacity(0.5))
     }
     
     var deleteButton: some View {
@@ -167,15 +203,10 @@ private extension MoodRowView {
 }
 
 // MARK: - Preview
-#Preview {
+#Preview("Mood List") {
     MoodListView()
 }
 
-// MARK: - Preview with Mock Data (Optional)
-//#if DEBUG
-//#Preview("With Sample Data") {
-//    let mockViewModel = MoodListViewModel(localDataSource: MockMoodSource())
-//    return MoodListView()
-//        .environmentObject(mockViewModel)
-//}
-//#endif
+#Preview("Empty State") {
+    MoodListView(month: 1)
+}

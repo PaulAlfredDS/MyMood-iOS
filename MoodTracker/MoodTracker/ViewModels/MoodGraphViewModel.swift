@@ -85,5 +85,13 @@ extension MoodGraphView {
             hasEnoughData = localDataSource.getMoodsbyMonth(month).count > 4
         }
         
+        func getMoodPercentage(for score: Int) -> Double {
+            guard !moodEntries.isEmpty else { return 0.0 }
+            
+            let entriesWithScore = moodEntries.filter { Int($0.score) == score }
+            let percentage = (Double(entriesWithScore.count) / Double(moodEntries.count)) * 100
+            return percentage
+        }
+        
     }
 }
