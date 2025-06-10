@@ -15,5 +15,9 @@ struct MoodData {
         Mood(emoji: "😢", label: "Sad", score: 2),
         Mood(emoji: "😭", label: "Very Sad", score: 1)
     ]
+    
+    static func getMoodEmoji(for score: Int) -> String {
+        return moods.first { $0.score == score }?.emoji ?? "😐"
+    }
 }
 

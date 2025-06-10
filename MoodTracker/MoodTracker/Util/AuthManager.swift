@@ -21,6 +21,8 @@ class AuthManager: ObservableObject {
     @Published var user: User?
     @Published var authState: AuthState = .signedOut
     
+    static let shared = AuthManager()
+    
     private var authStateHandle: AuthStateDidChangeListenerHandle!
 
     init() {
