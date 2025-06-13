@@ -15,6 +15,7 @@ class LocalMoodSource: MoodDataSource {
     private var context = CoreDataManager.shared.persistentContainer.viewContext
     
     func addMood(_ mood: MoodEntry) {
+        context.insert(mood)
         saveMood()
     }
     
