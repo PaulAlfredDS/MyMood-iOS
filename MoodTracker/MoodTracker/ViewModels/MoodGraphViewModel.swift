@@ -54,16 +54,22 @@ extension MoodGraphView {
         }
         
         func fetchMoodEntries() {
-            moodEntries = localDataSource.getMoodEntries()
-            averageMoodScore = getAveMoodScorePercentage(from: moodEntries.map { Int($0.score) })
-            getCurrentEmoji()
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
+                self.moodEntries = self.localDataSource.getMoodEntries()
+                self.averageMoodScore = self.getAveMoodScorePercentage(from: self.moodEntries.map { Int($0.score) })
+                self.getCurrentEmoji()
+            }
         }
         
         func fetchMoodEntries(by month: Int) {
-            moodEntries = localDataSource.getMoodsbyMonth(month)
-            averageMoodScore = getAveMoodScorePercentage(from: moodEntries.map { Int($0.score) })
-            getCurrentEmoji()
-            moodEntries = moodEntries.sorted { $0.date! < $1.date! }
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
+                self.moodEntries = self.localDataSource.getMoodsbyMonth(month)
+                self.averageMoodScore = self.getAveMoodScorePercentage(from: self.moodEntries.map { Int($0.score) })
+                self.getCurrentEmoji()
+                self.moodEntries = self.moodEntries.sorted { $0.date! < $1.date! }
+            }
         }
         
         func getDaysOfMonth(of date: Date) -> [String] {
